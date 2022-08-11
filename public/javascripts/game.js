@@ -11,13 +11,15 @@ let entities = []
 async function init(){
     let screen = document.getElementById("screen")
     c2d = screen.getContext('2d');
-    map = await (await fetch("game/test.json")).json()
+    map = await (await fetch("./map.json")).json()
     width = screen.width
     height = screen.height
     
+    window.addEventListener("keydown",downKey)
+    window.addEventListener("keyup",upKey)
 
     entities = {
-        "player":await (await fetch("game/entities/player.json")).json()
+        "player":await (await fetch("./entities/player.json")).json()
     }
     entities.player.pos.x=map.playerspawn.x
     entities.player.pos.y=map.playerspawn.y
@@ -40,16 +42,46 @@ function gameloop(){
 }
 
 
+////////////////////////////////////////////////////
+//Retrieve inputs
+
+let keys = []
+
+function downKey(event){
+    if(!keys.includes(event.code)){
+        keys.push(event.code)
+    }
+}
+function upKey(event){
+    for(let i = 0; i<keys.length;i++){
+        if(keys[i]==event.code){
+            keys.splice(i,1)
+        }
+    }
+}
+
 
 /////////////////////////////////////////////////////
 //Update the Game objects
 
 function update(delta){
-    entities.player.vel.x+=0.1
-    entities.player.vel.y+=0
+    entities.player.vel.x = 0
+    entities.player.vel.y = 0
+
+    if(keys.includes("KeyW")){
+        entities.player.vel.y=-entities.player.speed
+    }
+    if(keys.includes("KeyA")){
+        entities.player.vel.x=-entities.player.speed
+    }
+    if(keys.includes("KeyS")){
+        entities.player.vel.y=entities.player.speed
+    }
+    if(keys.includes("KeyD")){
+        entities.player.vel.x=entities.player.speed
+    }
 
 
-    console.log(entities.player.pos)
     if(map.solid[map.map[Math.round(entities.player.pos.y+0.5)][Math.round(entities.player.vel.x*delta+entities.player.pos.x+0.5)]]){
         entities.player.vel.x=0
     }//Math.floor(entities.player.vel.y*delta+entities.player.pos.y)+1
