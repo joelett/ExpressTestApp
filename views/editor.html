@@ -6,6 +6,48 @@
     </head>
     <body>
         <h1>Game editor</h1>
-        
+        <label for="file">Worldfile:</label>
+        <input type="text" id="file" name="file">
+        <input type="button" id="load" value="load">
+        <input type="button" id="save" value="save">
+        <br>
+        <label for="wid">Width:</label>
+        <input type="number" id="wid" name="wid" min="1" max="256" value="32">
+        <label for="hei">Height:</label>
+        <input type="number" id="hei" name="hei" min="1" max="256" value="32"><br>
+
+        <script>
+            function tableCreate(){
+                let tbl = document.createElement('table')
+                tbl.id = "map"
+                tbl.style.width='800'
+                tbl.style.height='600'
+                tbl.style.border='1px solid black'
+                document.body.appendChild(tbl)
+                tbl.insertRow().insertCell()
+                sizeChange()
+            }
+            tableCreate()
+
+            document.getElementById("wid").addEventListener("change",sizeChange);
+            document.getElementById("hei").addEventListener("change",sizeChange);
+
+            function sizeChange(){
+                console.log("SIZE CHANGED")
+                let tbl = document.getElementById("map")
+                let rows = document.getElementById("hei").value-tbl.rows.length
+                let cols = document.getElementById("wid").value-tbl.rows[0].cells.length
+
+                for(let y=0;y<rows;y++){
+                    tbl.insertRow();
+                }
+                for(let y=0;y<tbl.rows.length;y++){
+                    for(let x=0;x<cols;x++){
+                        tbl.rows[y].insertCell();
+                    }
+                }
+
+            }
+        </script>
     </body>
 </html>
