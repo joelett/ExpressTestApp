@@ -1,0 +1,58 @@
+<html>
+    <head>
+
+    </head>
+    <body>
+        <h1 id="welcome">Welcome user!</h1>
+        <form id="userform" action="" onsubmit="return false">
+            <label for="uname">Name:</label>
+            <input type="text" id="uname" name="uname"><br>
+            <label for="uage">Age:</label>
+            <input type="number" id="uage" name="uage" min="0" max="200"><br>
+            <label for="pw">Password: </label>
+            <input type="password" id="pw" name="pw"><br>
+            <input type="submit">
+        </form>
+
+
+
+        <script>
+            fetch("user/userdata").then(u=>{
+                console.log(u)
+                u.json().then(user=>{
+                    document.getElementById("uname").value = user.name
+                    document.getElementById("uage").value = user.age
+                })
+            }).catch(err=>{
+                console.log(err)
+            })
+
+            function nameChanger(){
+                document.getElementById("welcome").textContent = "Welcome "+document.getElementById("uname").value+"!"
+                t = setTimeout(nameChanger,10)
+            }
+            nameChanger()
+
+            document.getElementById("userform").addEventListener("submit",submitForm)
+
+            async function submitForm(event){
+                console.log("SUBMIT FORM")
+                console.log(event.target)
+                await fetch("user/senddata",{
+                    method:"POST",
+                    headers:{'Content-Type': 'application/json'},
+                    body:await JSON.stringify({
+                            name:document.getElementById("uname").value,
+                            age:document.getElementById("uage").value,
+                            password:document.getElementById("pw").value
+                })
+                }).then(status=>{
+                    console.log(status)
+                }).catch(err=>{
+                    console.log(err)
+                })
+            }
+        </script>
+
+    </body>
+</html>
