@@ -11,7 +11,7 @@ let entities = []
 async function init(){
     let screen = document.getElementById("screen")
     c2d = screen.getContext('2d');
-    map = await (await fetch("./map.json")).json()
+    map = await (await fetch("./worlds/map.json")).json()
     width = screen.width
     height = screen.height
     
@@ -24,7 +24,10 @@ async function init(){
     entities.player.pos.x=map.playerspawn.x
     entities.player.pos.y=map.playerspawn.y
 
-
+    
+    c2d.fillStyle="hsl(0,0%,0%)"
+    c2d.fillRect(0,0,width,height)
+    
     gameloop()
 }
 addEventListener("DOMContentLoaded",init)
@@ -80,6 +83,10 @@ function update(delta){
     if(keys.includes("KeyD")){
         entities.player.vel.x=entities.player.speed
     }
+    if(keys.includes("ShiftLeft")){
+        entities.player.vel.x*=2
+        entities.player.vel.y*=2
+    }
 
 
     if(map.solid[map.map[Math.round(entities.player.pos.y+0.5)][Math.round(entities.player.vel.x*delta+entities.player.pos.x+0.5)]]){
@@ -91,7 +98,7 @@ function update(delta){
 
     entities.player.pos.x+=entities.player.vel.x*delta
     entities.player.pos.y+=entities.player.vel.y*delta
-
+    
 
     camera.x=entities.player.pos.x*tilesize
     camera.y=entities.player.pos.y*tilesize
@@ -124,8 +131,8 @@ function drawMap(){
         for(let x=0;x<map.map[y].length;x++){
             c2d.fillStyle=map.colors[map.map[y][x]]
             c2d.fillRect(
-                x*tilesize+width/2-camera.x,
-                y*tilesize+height/2-camera.y,
+                Math.floor(x*tilesize+width/2-camera.x),
+                Math.floor(y*tilesize+height/2-camera.y),
                 tilesize,
                 tilesize)
         }

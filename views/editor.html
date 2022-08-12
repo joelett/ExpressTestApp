@@ -3,11 +3,17 @@
         <title>
             Game editor
         </title>
+        <style>
+            tbody{
+                width:100%;
+                height:100%;
+            }
+        </style>
     </head>
     <body>
         <h1>Game editor</h1>
         <label for="file">Worldfile:</label>
-        <input type="text" id="file" name="file">
+        <input type="text" id="file" name="file" value="map.json">
         <input type="button" id="load" value="load">
         <input type="button" id="save" value="save">
         <br>
@@ -23,31 +29,97 @@
                 tbl.style.width='800'
                 tbl.style.height='600'
                 tbl.style.border='1px solid black'
+                tbl.style.float="left"
+                tbl.cellSpacing=0
                 document.body.appendChild(tbl)
                 tbl.insertRow().insertCell()
+
+                //tbl.addEventListener("click",tableClicked)
+                tbl.addEventListener("mousedown",tableClicked)
+                                
+
+                let tbl2 = document.createElement('table')
+                tbl2.id = "tileset"
+                tbl2.style.width='50'
+                tbl2.style.height='600'
+                tbl2.style.border='1px solid black'
+                tbl2.style.margin="0 10"
+                tbl2.style.float="left"
+                document.body.appendChild(tbl2)
+                tbl2.insertRow().insertCell()
+
                 sizeChange()
             }
             tableCreate()
 
             document.getElementById("wid").addEventListener("change",sizeChange);
             document.getElementById("hei").addEventListener("change",sizeChange);
+            
 
             function sizeChange(){
                 console.log("SIZE CHANGED")
                 let tbl = document.getElementById("map")
                 let rows = document.getElementById("hei").value-tbl.rows.length
-                let cols = document.getElementById("wid").value-tbl.rows[0].cells.length
+                //let cols = document.getElementById("wid").value-tbl.rows[0].cells.length
+                
+                //console.log(rows+" "+cols)
 
                 for(let y=0;y<rows;y++){
                     tbl.insertRow();
                 }
-                for(let y=0;y<tbl.rows.length;y++){
-                    for(let x=0;x<cols;x++){
-                        tbl.rows[y].insertCell();
-                    }
+
+                for(let y=rows; y<0;y++){
+                    console.log("DELETE")
+                    tbl.deleteRow(tbl.rows.length+y);
                 }
 
+                for(let y=0;y<tbl.rows.length;y++){
+                    let cols = document.getElementById("wid").value-tbl.rows[y].cells.length
+                    for(let x=0;x<cols;x++){
+                          tbl.rows[y].insertCell();
+                    }
+
+                    for(let x=cols;x<0;x++){
+                          tbl.rows[y].deleteCell(tbl.rows[y].cells.length+x);
+                    }
+                }
             }
+
+
+            document.getElementById("load").addEventListener("input",loadFile)
+            document.getElementById("load").addEventListener("click",loadFile)
+
+            let data
+            async function loadFile(event){
+                let tbl = document.getElementById("map")
+                console.log("TEST")
+                data = await(await fetch("/editor/loadData",{
+                    headers:{'gamefile':document.getElementById("file").value},
+                })).json()
+                console.log(data)
+                document.getElementById("hei").value=data.map.length
+                document.getElementById("wid").value=data.map[0].length
+                sizeChange()
+                //document.getElementById("file").value)
+                for(let y=0;y<data.map.length;y++){
+                    for(let x=0;x<data.map[y].length;x++){
+                            tbl.rows[y].cells[x].value=data.map[y][x]
+                            tbl.rows[y].cells[x].style.backgroundColor=data.colors[data.map[y][x]]
+                    }
+                }
+                
+            }
+
+            async function tableClicked(event){
+                console.log(event)
+                if(event.path[0].tagName=="TD"){
+                    event.path[0].value=ucval
+                    event.path[0].style.backgroundColor=data.colors[ucval]
+                }
+            }
+
+            let ucval = 0
+
         </script>
     </body>
 </html>

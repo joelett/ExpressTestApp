@@ -1,0 +1,76 @@
+<html>
+    <head>
+        <style>
+            body{
+                background: linear-gradient(to bottom, #73b72a 0%,#73b72a 50%,#ec6607 50%, #ec6607 100%);
+                margin:0%;
+            }
+            .square{
+                background: linear-gradient(to bottom, #ec6607 0%,#ec6607 50%,#73b72a 50%, #73b72a 100%);
+                position:relative;
+                width: 150px;
+                height: 150px;
+                margin:10px;
+                display: inline-block;
+
+                animation-name: rotate;
+                animation-duration: 1s;
+                animation-iteration-count: infinite;
+                animation-timing-function: linear;
+                animation-play-state: paused;
+            }
+
+            @keyframes rotate{
+                from{
+                    transform: rotate(0deg);
+                }
+                to{
+                    transform: rotate(360deg);
+                }
+            }
+
+            .sqrparent{
+                display: inline-block;
+                position:relative;
+                top:50%;
+                left:50%;
+                transform: translate(-50%, -50%);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sqrparent">
+            <div class="square" id="s1">
+            </div>
+            <div class="square" id="s2">
+            </div>
+
+            <script>
+                let square1 = document.getElementById("s1")
+                let square2 = document.getElementById("s2")
+                square1.addEventListener("click",clickEvent)
+                square2.addEventListener("click",clickEvent)//Nächstes mal dblclick
+                
+                let clicks=0
+                let lc
+                function clickEvent(event){
+                    square1.style.animationPlayState="paused"
+                    square2.style.animationPlayState="paused"
+
+                    if(Date.now()-lc>1000){
+                        clicks=0
+                    }
+
+                    clicks++;
+                    lc=Date.now()
+                    
+                    if(clicks==2){
+                        clicks=0
+                        square1.style.animationPlayState="running"
+                        square2.style.animationPlayState="running"
+                    }
+                }
+            </script>
+        </div>
+    </body>
+</html>

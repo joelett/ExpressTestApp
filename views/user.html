@@ -14,6 +14,13 @@
             <input type="submit">
         </form>
 
+        <h3>Login</h3>
+        <form id="loginform" action="" onsubmit="return false">
+            <label for="user">Username:</label>
+            <input type="text" id="user" name="user">
+            <input type="submit">
+        </form>
+
 
 
         <script>
@@ -34,6 +41,7 @@
             nameChanger()
 
             document.getElementById("userform").addEventListener("submit",submitForm)
+            document.getElementById("loginform").addEventListener("submit",login)
 
             async function submitForm(event){
                 console.log("SUBMIT FORM")
@@ -52,6 +60,16 @@
                     console.log(err)
                 })
             }
+            
+            async function login(event){
+               //location.href = 
+               location.href=((await(await fetch("user/login",{
+                headers:{
+                    inquiry: document.getElementById("user").value
+                }
+                })).json()).respSite)
+            }
+
         </script>
 
     </body>

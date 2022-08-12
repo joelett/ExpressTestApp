@@ -32,4 +32,23 @@ router.post('/senddata', function(req,res){
   }
 })
 
+//ROUTER LOGIN
+router.get("/login",function(req,res){
+  if(req.headers.inquiry=="Chef"){
+    res.send({"respSite":"user/chef"})
+  }else if(req.headers.inquiry=="USB"){
+    res.send({"respSite":"user/usb"})
+  }else{
+    res.send({"respSite":"user"})
+  }
+})
+
+router.get("/usb", function(req,res){
+  res.render("usb.html")
+})
+
+router.get("/chef", function(req,res){
+  res.render("chef.html")
+})
+
 module.exports = router;
