@@ -20,9 +20,15 @@ router.get('/loadData',function(req,res){
 })
 
 router.post('/saveData',function(req,res){
-    
+  console.log("Save file")
+  let data = req.body
+  console.log(data)
+  let directory = "../public/game/worlds/"
+  let bod = JSON.stringify(req.body.data)
+  console.log(bod);
+    fs.writeFileSync(__dirname+"/"+directory+req.body.file,bod)
+    res.send("Sent")
   
-  res.send("done")
 })
 
 module.exports = router;

@@ -33,10 +33,11 @@ router.post('/senddata', function(req,res){
 })
 
 //ROUTER LOGIN
-router.get("/login",function(req,res){
-  if(req.headers.inquiry=="Chef"){
+router.post("/login",function(req,res){
+  console.log(req.body)
+  if(req.body.inquiry=="Chef"){
     res.send({"respSite":"user/chef"})
-  }else if(req.headers.inquiry=="USB"){
+  }else if(req.body.inquiry=="USB"){
     res.send({"respSite":"user/usb"})
   }else{
     res.send({"respSite":"user"})

@@ -46,7 +46,9 @@
                 tbl2.style.margin="0 10"
                 tbl2.style.float="left"
                 document.body.appendChild(tbl2)
-                tbl2.insertRow().insertCell()
+                tbl2.insertRow().insertCell().value=0
+
+                tbl2.addEventListener("mousedown",tableClicked)
 
                 sizeChange()
             }
@@ -76,7 +78,7 @@
                 for(let y=0;y<tbl.rows.length;y++){
                     let cols = document.getElementById("wid").value-tbl.rows[y].cells.length
                     for(let x=0;x<cols;x++){
-                          tbl.rows[y].insertCell();
+                          tbl.rows[y].insertCell().value=0;
                     }
 
                     for(let x=cols;x<0;x++){
@@ -88,10 +90,14 @@
 
             document.getElementById("load").addEventListener("input",loadFile)
             document.getElementById("load").addEventListener("click",loadFile)
+            document.getElementById("save").addEventListener("input",saveFile)
+            document.getElementById("save").addEventListener("click",saveFile)
 
             let data
             async function loadFile(event){
                 let tbl = document.getElementById("map")
+                let tbl2 = document.getElementById("tileset")
+                
                 console.log("TEST")
                 data = await(await fetch("/editor/loadData",{
                     headers:{'gamefile':document.getElementById("file").value},
@@ -107,14 +113,82 @@
                             tbl.rows[y].cells[x].style.backgroundColor=data.colors[data.map[y][x]]
                     }
                 }
+
+                tsSizeChange()
+                for(let y=0;y<data.colors.length;y++){
+                    tbl2.rows[y].cells[0].value = y
+                    tbl2.rows[y].cells[0].style.backgroundColor=data.colors[y]
+                }
+            }
+
+            async function saveFile(event){
+                console.log("SAVING")
+                let tbl = document.getElementById("map")
+                let tbl2 = document.getElementById("tileset")
+
+                for(let y=0;y<tbl.rows.length;y++){
+                    for(let x=0;x<tbl.rows[y].cells.length;x++){
+                        data.map[y][x]=tbl.rows[y].cells[x].value
+                    }                   
+                }
+
+                for(let y=0;y<tbl2.rows.length;y++){
+                    data.colors[y]=tbl2.rows[y].cells[0].style.backgroundColor
+                }
+
+                fetch("editor/saveData",{
+                    method:"POST",
+                    headers:{'Content-Type': 'application/json'},
+                    body:await JSON.stringify({
+                        file:document.getElementById("file").value,
+                        data:data
+                    })
+                }).then(response=>{
+                    console.log(response)
+                }).catch(err=>{
+                    console.log(err)
+                })
+
+            }
+
+
+            function tsSizeChange(){
                 
+                console.log("SIZE CHANGED")
+                let tbl = document.getElementById("tileset")
+                let rows = data.colors.length-tbl.rows.length
+                //let cols = document.getElementById("wid").value-tbl.rows[0].cells.length
+                
+                //console.log(rows+" "+cols)
+
+                for(let y=0;y<rows;y++){
+                    tbl.insertRow();
+                }
+
+                for(let y=rows; y<0;y++){
+                    console.log("DELETE")
+                    tbl.deleteRow(tbl.rows.length+y);
+                }
+
+                for(let y=0;y<tbl.rows.length;y++){
+                    let cols = document.getElementById("wid").value-tbl.rows[y].cells.length
+                    if(tbl.rows[y].cells.length==0){
+                        tbl.rows[y].insertCell();
+                    }
+                }
             }
 
             async function tableClicked(event){
                 console.log(event)
-                if(event.path[0].tagName=="TD"){
-                    event.path[0].value=ucval
-                    event.path[0].style.backgroundColor=data.colors[ucval]
+                if(event.path.includes(document.getElementById("map"))){
+                    if(event.path[0].tagName=="TD"){
+                        event.path[0].value=ucval
+                        event.path[0].style.backgroundColor=data.colors[ucval]
+                    }
+                }else if(event.path.includes(document.getElementById("tileset"))){
+                    if(event.path[0].tagName=="TD"){
+                        ucval=event.path[0].value
+                    }
                 }
             }
 

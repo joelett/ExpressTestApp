@@ -88,13 +88,34 @@ function update(delta){
         entities.player.vel.y*=2
     }
 
-
-    if(map.solid[map.map[Math.round(entities.player.pos.y+0.5)][Math.round(entities.player.vel.x*delta+entities.player.pos.x+0.5)]]){
-        entities.player.vel.x=0
-    }//Math.floor(entities.player.vel.y*delta+entities.player.pos.y)+1
-    if(map.solid[map.map[Math.round(entities.player.vel.y*delta+entities.player.pos.y+0.5)][Math.round(entities.player.pos.x+0.5)]]){
-        entities.player.vel.y=0
+    if(entities.player.vel.x>0){
+        if(map.solid[map.map[Math.round(entities.player.pos.y-entities.player.size.y/2)][Math.round(entities.player.pos.x+entities.player.size.x/2+entities.player.vel.x*delta)]]||
+        map.solid[map.map[Math.round(entities.player.pos.y+entities.player.size.y/2)][Math.round(entities.player.pos.x+entities.player.size.x/2+entities.player.vel.x*delta)]]){
+            entities.player.vel.x=0
+        }
     }
+    if(entities.player.vel.x<0){
+        if(map.solid[map.map[Math.round(entities.player.pos.y-entities.player.size.y/2)][Math.round(entities.player.pos.x-entities.player.size.x/2+entities.player.vel.x*delta)]]||
+        map.solid[map.map[Math.round(entities.player.pos.y+entities.player.size.y/2)][Math.round(entities.player.pos.x-entities.player.size.x/2+entities.player.vel.x*delta)]]){
+            entities.player.vel.x=0
+        }
+    }
+    if(entities.player.vel.y>0){
+        if(map.solid[map.map[Math.round(entities.player.pos.y+entities.player.size.y/2+entities.player.vel.y*delta)][Math.round(entities.player.pos.x-entities.player.size.x/2)]]||
+        map.solid[map.map[Math.round(entities.player.pos.y+entities.player.size.y/2+entities.player.vel.y*delta)][Math.round(entities.player.pos.x+entities.player.size.x/2)]]){
+            entities.player.vel.y=0
+        }
+    }
+    if(entities.player.vel.y<0){
+        if(map.solid[map.map[Math.round(entities.player.pos.y-entities.player.size.y/2+entities.player.vel.y*delta)][Math.round(entities.player.pos.x-entities.player.size.x/2)]]||
+        map.solid[map.map[Math.round(entities.player.pos.y-entities.player.size.y/2+entities.player.vel.y*delta)][Math.round(entities.player.pos.x+entities.player.size.x/2)]]){
+            entities.player.vel.y=0
+        }
+    }
+
+    
+
+
 
     entities.player.pos.x+=entities.player.vel.x*delta
     entities.player.pos.y+=entities.player.vel.y*delta
@@ -103,10 +124,6 @@ function update(delta){
     camera.x=entities.player.pos.x*tilesize
     camera.y=entities.player.pos.y*tilesize
 }
-
-
-
-
 
 
 

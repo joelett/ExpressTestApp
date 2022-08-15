@@ -62,11 +62,15 @@
             }
             
             async function login(event){
-               //location.href = 
-               location.href=((await(await fetch("user/login",{
+               location.href = 
+               ((await(await fetch("user/login",{
+                method:"POST",
                 headers:{
-                    inquiry: document.getElementById("user").value
-                }
+                    'Content-Type': 'application/json'
+                },
+                body:JSON.stringify({
+                    "inquiry": document.getElementById("user").value
+                })
                 })).json()).respSite)
             }
 
