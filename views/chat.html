@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <title>Chat</title>
+        <script src="../javascripts/chat.js"></script>
+        <style>
+            div.msg{
+                background-color: #444444;
+                width: 800px;
+                height: 600px;
+                color: #ffffff;
+                padding: 10px;
+            }
+            input.msg{
+                width:734px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Chat with the server</h1>
+
+        <label for="uname">Username:</label>
+        <input type="text" id="uname" value="User">
+
+        <div id="messages" class="msg">
+            <p>Messages will appear here:</p>
+        </div>
+        <form id="umsg" onsubmit="return false;">
+            <input type="text" class="msg" id="msg">
+            <input type="submit">
+        </form>
+    </body>
+</html>

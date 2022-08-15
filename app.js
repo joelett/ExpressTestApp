@@ -7,6 +7,7 @@ var cons = require("consolidate")
 
 
 var indexRouter = require('./routes/index');
+var chatRouter = require('./routes/chat');
 var usersRouter = require('./routes/users');
 var userRouter = require('./routes/user');
 var gameRouter = require('./routes/game');
@@ -27,6 +28,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
+app.use('/chat', chatRouter);
 app.use('/users', usersRouter);
 app.use('/user', userRouter);
 app.use('/game', gameRouter)

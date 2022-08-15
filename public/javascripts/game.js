@@ -23,10 +23,6 @@ async function init(){
     }
     entities.player.pos.x=map.playerspawn.x
     entities.player.pos.y=map.playerspawn.y
-
-    
-    c2d.fillStyle="hsl(0,0%,0%)"
-    c2d.fillRect(0,0,width,height)
     
     gameloop()
 }
@@ -41,7 +37,7 @@ function gameloop(){
 
     draw()
 
-    let t = setTimeout(gameloop,10)
+    let t = setTimeout(gameloop,0)
 }
 
 
@@ -88,37 +84,38 @@ function update(delta){
         entities.player.vel.y*=2
     }
 
-    if(entities.player.vel.x>0){
-        if(map.solid[map.map[Math.round(entities.player.pos.y-entities.player.size.y/2)][Math.round(entities.player.pos.x+entities.player.size.x/2+entities.player.vel.x*delta)]]||
-        map.solid[map.map[Math.round(entities.player.pos.y+entities.player.size.y/2)][Math.round(entities.player.pos.x+entities.player.size.x/2+entities.player.vel.x*delta)]]){
-            entities.player.vel.x=0
+    ////////////////////////////////////////////
+	for(let ei = 0;ei<entities.length;ei++){
+        console.log("TEST")
+    if(entities[ei].vel.x>0){
+        if(map.solid[map.map[Math.round(entities[ei].pos.y-entities[ei].size.y/2)][Math.round(entities[ei].pos.x+entities[ei].size.x/2+entities[ei].vel.x*delta)]]||
+        map.solid[map.map[Math.round(entities[ei].pos.y+entities[ei].size.y/2)][Math.round(entities[ei].pos.x+entities[ei].size.x/2+entities[ei].vel.x*delta)]]){
+            entities[ei].vel.x=0
         }
     }
-    if(entities.player.vel.x<0){
-        if(map.solid[map.map[Math.round(entities.player.pos.y-entities.player.size.y/2)][Math.round(entities.player.pos.x-entities.player.size.x/2+entities.player.vel.x*delta)]]||
-        map.solid[map.map[Math.round(entities.player.pos.y+entities.player.size.y/2)][Math.round(entities.player.pos.x-entities.player.size.x/2+entities.player.vel.x*delta)]]){
-            entities.player.vel.x=0
+    if(entities[ei].vel.x<0){
+        if(map.solid[map.map[Math.round(entities[ei].pos.y-entities[ei].size.y/2)][Math.round(entities[ei].pos.x-entities[ei].size.x/2+entities[ei].vel.x*delta)]]||
+        map.solid[map.map[Math.round(entities[ei].pos.y+entities[ei].size.y/2)][Math.round(entities[ei].pos.x-entities[ei].size.x/2+entities[ei].vel.x*delta)]]){
+            entities[ei].vel.x=0
         }
     }
-    if(entities.player.vel.y>0){
-        if(map.solid[map.map[Math.round(entities.player.pos.y+entities.player.size.y/2+entities.player.vel.y*delta)][Math.round(entities.player.pos.x-entities.player.size.x/2)]]||
-        map.solid[map.map[Math.round(entities.player.pos.y+entities.player.size.y/2+entities.player.vel.y*delta)][Math.round(entities.player.pos.x+entities.player.size.x/2)]]){
-            entities.player.vel.y=0
+    if(entities[ei].vel.y>0){
+        if(map.solid[map.map[Math.round(entities[ei].pos.y+entities[ei].size.y/2+entities[ei].vel.y*delta)][Math.round(entities[ei].pos.x-entities[ei].size.x/2)]]||
+        map.solid[map.map[Math.round(entities[ei].pos.y+entities[ei].size.y/2+entities[ei].vel.y*delta)][Math.round(entities[ei].pos.x+entities[ei].size.x/2)]]){
+            entities[ei].vel.y=0
         }
     }
-    if(entities.player.vel.y<0){
-        if(map.solid[map.map[Math.round(entities.player.pos.y-entities.player.size.y/2+entities.player.vel.y*delta)][Math.round(entities.player.pos.x-entities.player.size.x/2)]]||
-        map.solid[map.map[Math.round(entities.player.pos.y-entities.player.size.y/2+entities.player.vel.y*delta)][Math.round(entities.player.pos.x+entities.player.size.x/2)]]){
-            entities.player.vel.y=0
+    if(entities[ei].vel.y<0){
+        if(map.solid[map.map[Math.round(entities[ei].pos.y-entities[ei].size.y/2+entities[ei].vel.y*delta)][Math.round(entities[ei].pos.x-entities[ei].size.x/2)]]||
+        map.solid[map.map[Math.round(entities[ei].pos.y-entities[ei].size.y/2+entities[ei].vel.y*delta)][Math.round(entities[ei].pos.x+entities[ei].size.x/2)]]){
+            entities[ei].vel.y=0
         }
     }
 
-    
 
-
-
-    entities.player.pos.x+=entities.player.vel.x*delta
-    entities.player.pos.y+=entities.player.vel.y*delta
+    entities[ei].pos.x+=entities[ei].vel.x*delta
+    entities[ei].pos.y+=entities[ei].vel.y*delta
+	}
     
 
     camera.x=entities.player.pos.x*tilesize
@@ -139,6 +136,8 @@ function update(delta){
 let c2d
 
 function draw(){
+    c2d.fillStyle="hsl(0,0%,0%)"
+    c2d.fillRect(0,0,width,height)
     drawMap()
     drawEntities()
 }

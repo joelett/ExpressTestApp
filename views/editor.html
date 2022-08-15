@@ -10,7 +10,7 @@
             }
         </style>
     </head>
-    <body>
+    <body oncontextmenu="return false;">
         <h1>Game editor</h1>
         <label for="file">Worldfile:</label>
         <input type="text" id="file" name="file" value="map.json">
@@ -36,6 +36,8 @@
 
                 //tbl.addEventListener("click",tableClicked)
                 tbl.addEventListener("mousedown",tableClicked)
+                window.addEventListener("mouseup",MouseUp)
+                tbl.addEventListener("mousemove",mouseMove)
                                 
 
                 let tbl2 = document.createElement('table')
@@ -127,13 +129,46 @@
                 let tbl2 = document.getElementById("tileset")
 
                 for(let y=0;y<tbl.rows.length;y++){
+                    let dt=[]
+
+                    while(data.map[0].length<tbl.rows[0].cells.length){
+                        for(let y = 0;y<data.map.length;y++){
+                            data.map[y].push(0)
+                        }
+                        //data.map.push()
+                    }
+                    while(data.map.length<tbl.rows.length){
+                        let dt = Array(data.map[0].length).fill('0')
+                        data.map.push(dt)
+                        //data.map.push()
+                    }
+
+                    while(data.map[0].length>tbl.rows[0].cells.length){
+                        for(let y = 0;y<tbl.rows.length;y++){
+                            data.map[y].pop()
+                        }
+                        //data.map.push()
+                    }
+                    while(data.map.length>tbl.rows.length){
+                        data.map.pop()
+                        //data.map.push()
+                    }
+
+
                     for(let x=0;x<tbl.rows[y].cells.length;x++){
                         data.map[y][x]=tbl.rows[y].cells[x].value
                     }                   
+                    if(data.map.length<=y){
+                        data.map.push(dt)
+                    }
                 }
 
                 for(let y=0;y<tbl2.rows.length;y++){
-                    data.colors[y]=tbl2.rows[y].cells[0].style.backgroundColor
+                    if(data.colors.length>y){
+                        data.colors[y]=tbl2.rows[y].cells[0].style.backgroundColor
+                    }else{
+                        data.colors.push(tbl2.rows[y].cells[0].style.backgroundColor)
+                    }
                 }
 
                 fetch("editor/saveData",{
@@ -178,9 +213,14 @@
                 }
             }
 
+
+            let mdown = false
+
             async function tableClicked(event){
-                console.log(event)
+                if(event.button==0)
+                {
                 if(event.path.includes(document.getElementById("map"))){
+                mdown = true
                     if(event.path[0].tagName=="TD"){
                         event.path[0].value=ucval
                         event.path[0].style.backgroundColor=data.colors[ucval]
@@ -189,6 +229,67 @@
                     if(event.path[0].tagName=="TD"){
                         ucval=event.path[0].value
                     }
+                }
+                }else if(event.button==2){
+                    fill(event.path[0].cellIndex,event.path[0].parentNode.rowIndex)
+                }
+            }
+
+            async function MouseUp(event){
+                mdown=false;
+            }
+
+            async function mouseMove(event){
+                if(mdown){
+                if(event.path.includes(document.getElementById("map"))){
+                    if(event.path[0].tagName=="TD"){
+                        event.path[0].value=ucval
+                        event.path[0].style.backgroundColor=data.colors[ucval]
+                    }
+                }
+                }
+            }
+
+            async function fillMap(event){
+                if(event.path.includes(document.getElementById("map"))){
+                    if(event.path[0].tagName=="TD"){
+                        fill(x,y)
+                        //event.path[0].value=ucval
+                        //event.path[0].style.backgroundColor=data.colors[ucval]
+                    }
+                }
+            }
+
+            async function fill(x,y){
+                let tbl = document.getElementById('map')
+                console.log(x+" "+y)
+                
+                let val = tbl.rows[y].cells[x].value
+                if(ucval!=val){
+
+                tbl.rows[y].cells[x].value=ucval
+                tbl.rows[y].cells[x].style.backgroundColor=data.colors[ucval]
+
+                if(x-1>=0){
+                    if(tbl.rows[y].cells[x-1].value==val){
+                        fill(x-1,y)
+                    }
+                }
+                if(y-1>=0){
+                    if(tbl.rows[y-1].cells[x].value==val){
+                        fill(x,y-1)
+                    }
+                }
+                if(x+1<tbl.rows[0].cells.length){
+                    if(tbl.rows[y].cells[x+1].value==val){
+                        fill(x+1,y)
+                    }
+                }
+                if(y+1<tbl.rows.length){
+                    if(tbl.rows[y+1].cells[x].value==val){
+                        fill(x,y+1)
+                    }
+                }
                 }
             }
 
