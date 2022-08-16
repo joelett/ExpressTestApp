@@ -71,14 +71,36 @@ document.getElementById('loginsubmit').addEventListener("click",login)
 console.log("Showlogin");
 }
 
+let publicKey
 async function login(){
+    publicKey = (await(await fetch("chat/getPubKey")).json()).public
+    
+    
+    //console.log(await crypto.subtle.encrypt("RSA-OAEP",publicKey,"Hello World"))
+    let pk = str2ab(window.atob(publicKey.replace("-----BEGIN PUBLIC KEY-----\n","").replace("-----END PUBLIC KEY-----\n","")))
+    
+    let crypt = await crypto.subtle.importKey("spki",
+    pk,
+    {
+        name: "RSA-OAEP",
+        hash: "SHA-256",
+    },
+    true,
+    ["encrypt"])
+
+
+    console.log(btoa(ab2str(await crypto.subtle.encrypt("RSA-OAEP",crypt,str2ab(document.getElementById("pass").value)))))
+
+
+
+
     console.log("LOGIN");
     let data = await (await fetch("chat/login",{
         method:"POST",
                     headers:{'Content-Type': 'application/json'},
                     body: await JSON.stringify({
                         uname:document.getElementById("uname").value,
-                        pass:document.getElementById("pass").value
+                        pass:btoa(ab2str(await crypto.subtle.encrypt("RSA-OAEP",crypt,str2ab(document.getElementById("pass").value))))
                     })
     })).json()
     console.log(data);
@@ -93,6 +115,37 @@ async function login(){
         document.getElementById("login").remove()
     }
 }
+
+
+////////////////////////////////////////
+
+function getSpkiDer(spkiPem){
+    const pemHeader = "-----BEGIN PUBLIC KEY-----";
+    const pemFooter = "-----END PUBLIC KEY-----";
+    var pemContents = spkiPem.substring(pemHeader.length, spkiPem.length - pemFooter.length);
+    var binaryDerString = window.atob(pemContents);
+    return str2ab(binaryDerString); 
+}
+
+//
+// Helper
+//
+
+// https://stackoverflow.com/a/11058858
+function str2ab(str) {
+    const buf = new ArrayBuffer(str.length);
+    const bufView = new Uint8Array(buf);
+    for (let i = 0, strLen = str.length; i < strLen; i++) {
+        bufView[i] = str.charCodeAt(i);
+    }
+    return buf;
+}
+    
+function ab2str(buf) {
+    return String.fromCharCode.apply(null, new Uint8Array(buf));
+}
+
+//////////////////////////////////////////////////
 
 
 
