@@ -1,59 +1,74 @@
+//let MediaStreamRecorder = require("msr")
 //////////////////////////////////////
 ///https://levelup.gitconnected.com/building-a-video-chat-app-with-node-js-socket-io-webrtc-26f46b213017
 
+var peer = new Peer({
+    host: "localhost",
+    port: 9000,
+    path: "/streaming",
+    pingInterval: 5000,
+    debug: true,
+    config: { 'iceServers': [
+        { urls: "stun:stun.l.google.com:19302" },
+        { urls: "turn:0.peerjs.com:3478", username: "peerjs", credential: "peerjsp" }
+    ],
+    sdpSemantics: "unified-plan",
+    iceTransportPolicy: "relay" }
+  });
 
 
 
+window.addEventListener("DOMContentLoaded",init)
 
-const socket = io("/");
+let streambtn,watchbtn,videogrid,video
+let peerconbtn, peerIdInput
 
-const videoGrid = document.getElementById("video-grid");
+function init(){
+    streambtn=document.getElementById("streambtn")
+    watchbtn=document.getElementById("watchbtn")
+    videogrid=document.getElementById("video-grid")
+    video=document.getElementById("video")
+    streambtn.addEventListener("click",startStreaming)
+    
+    peerIdInput = document.getElementById("Peer-ID")
+    peerconbtn = document.getElementById("connect")
+    peerconbtn.addEventListener("click",connectToPeer)
 
-const myVideo = document.createElement("video");
+    peer.on('open', function(id){
+        console.log("My peer ID is: "+id)
+        document.getElementById("peerID").innerText=id
+    })
+}
 
-myVideo.muted = true;
+let call
+let stream
+async function startStreaming(){
+    stream = await navigator.mediaDevices.getDisplayMedia()
+    video.srcObject=stream
+}
 
-var peer = new Peer(undefined, {
-path: "/peerjs",
-host: "/",
-port: "3000",
+
+let conn = peer.connect()
+
+async function connectToPeer(){
+    console.log("Connecting to "+peerIdInput.value)
+    conn = await peer.connect(peerIdInput.value)
+    conn.on('open', function(){
+        console.log(conn.peer+" "+conn.open)
 });
+console.log(conn.peer+" "+conn.open)
+}
 
-let myVideoStream;
 
-navigator.mediaDevices
-.getUserMedia({
-audio: true,
-video: true,
-})
-.then((stream) => {
-myVideoStream = stream;
-addVideoStream(myVideo, stream);
-peer.on("call", (call) => {
-call.answer(stream);
-const video = document.createElement("video");
-call.on("stream", (userVideoStream) => {
-addVideoStream(video, userVideoStream);
-});
-});
-socket.on("user-connected", (userId) => {
-connectToNewUser(userId, stream);
-});
-});
-const connectToNewUser = (userId, stream) => {
-const call = peer.call(userId, stream);
-const video = document.createElement("video");
-call.on("stream", (userVideoStream) => {
-addVideoStream(video, userVideoStream);
-});
-};
-peer.on("open", (id) => {
-socket.emit("join-room", ROOM_ID, id);
-});
-const addVideoStream = (video, stream) => {
-video.srcObject = stream;
-video.addEventListener("loadedmetadata", () => {
-video.play();
-videoGrid.append(video);
-});
-};
+peer.on('connection', function(conn) {
+    console.log("Connection "+conn.peer+" "+conn.open+" ")
+    conn.on('open',function(){
+        console.log("OPENED")
+    })
+
+    conn.on('data', function(data){
+      // Will print 'hi!'
+      console.log(data);
+    });
+  });
+

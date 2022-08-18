@@ -1,18 +1,9 @@
 let express = require('express');
 let router = express.Router();
 
-let { v4: uuidv4 } = require("uuid");
+let {PeerServer} = require("peer")
+let peerServer = PeerServer({port:9000,path:'/streaming'})
 
-const server = require("http").Server(router)
-
-const io = require("socket.io") (server)
-let {ExpressPeerServer} = require("peer")
-
-const peerServer = ExpressPeerServer(server, {
-  debug:true
-})
-
-router.use("peerjs",peerServer);
 
 /* GET home page. */
 //router.get('/', function(req, res, next) {
@@ -20,22 +11,13 @@ router.use("peerjs",peerServer);
 //});
 
 router.get("/", (req, res) => {
-  res.redirect(`streaming/${uuidv4()}`);
+  res.render("streaming.html")
 });
 
-router.get("/:room",(req, res) => {
-  res.render("streaming.html", { roomId: req.params.room });
-});
-
-
-io.on("connection",(socket)=>{
-  socket.on("join-room",(roomId,userId)=>{
-    socket.join(roomId);
-    socket.to(roomId).broadcast.emit("user-connected",userId)
-  })
+router.post("/sendData",(req, res) => {
+  console.log(req.body)
+  res.send(req.body)
 })
-
-server.listen(3001);
 
 
 module.exports = router;

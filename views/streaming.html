@@ -1,12 +1,17 @@
 <html>
     <head>
-        <script src="http://localhost:3001/socket.io/socket.io.js"></script>
+        <!--<script src="https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js"></script>-->
+        <script src="../javascripts/peerjs.min.js"></script>
     </head>
     <body>
+        <input id="Peer-ID"></input>
+        <button id="connect">Connect</button>
+
         <button id="streambtn">Start streaming</button>
         <button id="watchbtn">Watch stream</button>
         <div id="video-grid">
         <video id="video" autoplay width="800" height="600"></video>
+        <p id="peerID">[PEERID]</p>
         
         </div>
         <pre id="log"></pre>
