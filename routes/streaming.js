@@ -4,6 +4,7 @@ let router = express.Router();
 let {PeerServer} = require("peer")
 let peerServer = PeerServer({port:9000,path:'/streaming'})
 
+//router.use(peerServer)
 
 /* GET home page. */
 //router.get('/', function(req, res, next) {
