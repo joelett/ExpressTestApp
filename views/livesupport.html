@@ -1,0 +1,195 @@
+<html>
+
+<head>
+
+</head>
+
+<body>
+    <video id="video" autoplay width="800" height="600"></video>
+    <video id="stream" autoplay width="800" height="600"></video>
+    <script>
+        let stream
+        let chunks = [];
+        let mediaRecorder
+        let streamVid
+        navigator.mediaDevices.getDisplayMedia({ audio: true, video: true }).then(vid => {
+            document.getElementById("video").srcObject = vid
+            streamVid = document.getElementById("stream")
+
+
+            let options = {
+                audioBitsPerSecond: 128000,
+                videoBitsPerSecond: 2500000,
+                mimeType: 'video/webm'
+            }
+            mediaRecorder = new MediaRecorder(vid, options)
+            stream = mediaRecorder.stream;
+            console.log(stream)
+            mediaRecorder.addEventListener("dataavailable", handleData)
+            //mediaRecorder.addEventListener("stop", stopping)
+            mediaRecorder.start(2000);// After 2 seconds create new Chunk
+            
+            receiveStreamData()
+            streamVid.addEventListener("ended",receiveStreamData)
+
+            //startAndStop()
+        })
+        async function handleData(event) {
+            console.log("HANDLE DATA")
+            if (event.data.size > 0) {
+                
+                var data = new FormData();
+                data.append('featuredVid', event.data)
+
+                await fetch('/livesupport/send', {
+                    method: "POST",
+                    body: data
+                })
+                //chunks.push(event.data)
+                //console.log(chunks)
+            } else {}
+        }
+
+        async function receiveStreamData(){
+            console.log("RECEIVE DATA")
+            ////////////////////////////////////////////////////////////////
+            //TOOO MUCH CODE!!!!!!!!!!!!
+            let resp = await fetch('/livesupport/rec').then(response => {
+                console.log("HELLO READER")
+                const reader = response.body.getReader();
+                return new ReadableStream({
+                    start(controller) {
+                        return pump();
+                        function pump() {
+                            return reader.read().then(({ done, value }) => {
+                                if (done) {
+                                    controller.close();
+                                    return;
+                                } else {
+                                    console.log("RECEIVE")
+                                    controller.enqueue(value);
+                                    return pump();
+                                }
+                            });
+                        }
+                    }
+                })
+            }).then(stream => {
+                    return new Response(stream);
+                }).then(response => {
+                    return response.blob()
+                }).then(data => {
+                    let bl = new Blob([data], { type: "video/webm" });
+                    return bl;
+                }).catch(error => {
+                    console.error(error);
+                    USB.RIC.ERROR.DisplayCaughtError(error);
+                    return "[]";
+                });
+                ////////////////////////////////////////////////////
+                let vidurl = URL.createObjectURL(resp);
+                streamVid.src = vidurl
+                //showVid.controls = true
+            //setTimeout(receiveStreamData,100)
+        }
+
+
+
+        let clipContainer,showVid
+        let firstTime = true
+
+        /*async function stopping(e) {
+            console.log("data available after MediaRecorder.stop() called.");
+            if(firstTime){
+            clipContainer = document.createElement('article');
+            showVid = document.createElement('video');
+            //const downloadbtn = document.createElement('button')
+
+            //downloadbtn.innerText = "DOWNLOAD"
+
+            clipContainer.appendChild(showVid);
+            //clipContainer.appendChild(downloadbtn)
+            document.body.appendChild(clipContainer);
+            firstTime=false
+            }
+
+            const blob = new Blob(chunks, { 'type': 'video/webm;' });
+            chunks = [];
+
+            console.log(blob)
+
+            var data = new FormData();
+            data.append('featuredVid', blob)
+
+            await fetch('/livesupport/send', {
+                method: "POST",
+                body: data
+            })
+
+            let resp = await fetch('/livesupport/rec').then(response => {
+                console.log("HELLO READER")
+                const reader = response.body.getReader();
+                return new ReadableStream({
+                    start(controller) {
+                        return pump();
+                        function pump() {
+                            return reader.read().then(({ done, value }) => {
+                                if (done) {
+                                    controller.close();
+                                    return;
+                                } else {
+                                    console.log("RECEIVE")
+                                    controller.enqueue(value);
+                                    return pump();
+                                }
+                            });
+                        }
+                    }
+                })
+            }).then(stream => {
+                    return new Response(stream);
+                }).then(response => {
+                    return response.blob()
+                }).then(data => {
+                    let bl = new Blob([data], { type: "video/webm" });
+                    return bl;
+                }).catch(error => {
+                    console.error(error);
+                    USB.RIC.ERROR.DisplayCaughtError(error);
+                    return "[]";
+                });
+            console.log(resp)
+            console.log(resp.type)
+
+            let vidurl = URL.createObjectURL(resp);
+
+            showVid.src = vidurl
+            showVid.width = 800;
+            showVid.height = 600;
+            showVid.controls = true
+            showVid.play()
+            console.log("recorder stopped");
+            /*downloadbtn.addEventListener("click", ev => {
+                var a = document.createElement('a');
+                document.body.appendChild(a);
+                a.style = 'display: none';
+                a.href = vidurl;
+                a.download = 'test.webm';
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+        }*/
+
+
+
+
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>

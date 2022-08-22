@@ -17,7 +17,7 @@
   });*/
   var peer = new Peer({
     host: '127.0.0.1',
-    port: 9000,
+    port: 9001,
     path: '/streaming',
     config: { 'iceServers': [
     { url: 'stun:stun01.sipphone.com' },

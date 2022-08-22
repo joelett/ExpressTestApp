@@ -12,7 +12,8 @@ var usersRouter = require('./routes/users');
 var userRouter = require('./routes/user');
 var gameRouter = require('./routes/game');
 var editorRouter = require('./routes/editor');
-var streamingRouter = require('./routes/streaming');
+//var streamingRouter = require('./routes/streaming');
+var lsRouter = require('./routes/livesupport');
 
 var app = express();
 
@@ -20,7 +21,7 @@ var app = express();
 app.engine("html",cons.swig)
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-//app.use(express.static(__dirname+'/public'))
+app.use(express.static(__dirname+'/public'))
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -37,7 +38,9 @@ app.use('/users', usersRouter);
 app.use('/user', userRouter);
 app.use('/game', gameRouter)
 app.use('/editor', editorRouter)
-app.use('/streaming', streamingRouter)
+//app.use('/streaming', streamingRouter)
+app.use('/livesupport',lsRouter)
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

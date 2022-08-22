@@ -2,7 +2,7 @@ let express = require('express');
 let router = express.Router();
 
 let {PeerServer} = require("peer")
-let peerServer = PeerServer({port:9000,path:'/streaming'})
+let peerServer = PeerServer({port:9001,path:'/streaming'})
 
 //router.use(peerServer)
 
@@ -10,6 +10,7 @@ let peerServer = PeerServer({port:9000,path:'/streaming'})
 //router.get('/', function(req, res, next) {
 //  res.render('streaming.html', { title: 'Stream' });
 //});
+
 
 router.get("/", (req, res) => {
   res.render("streaming.html")
@@ -19,6 +20,7 @@ router.post("/sendData",(req, res) => {
   console.log(req.body)
   res.send(req.body)
 })
+
 
 
 module.exports = router;
