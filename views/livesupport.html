@@ -12,7 +12,11 @@
         let chunks = [];
         let mediaRecorder
         let streamVid
-        navigator.mediaDevices.getDisplayMedia({ audio: true, video: true }).then(vid => {
+
+        let ms = new MediaSource();
+        let srcbuff
+
+        navigator.mediaDevices.getDisplayMedia({ audio: true, video: true }).then(async vid => {
             document.getElementById("video").srcObject = vid
             streamVid = document.getElementById("stream")
 
@@ -27,10 +31,15 @@
             console.log(stream)
             mediaRecorder.addEventListener("dataavailable", handleData)
             //mediaRecorder.addEventListener("stop", stopping)
-            mediaRecorder.start(2000);// After 2 seconds create new Chunk
+            mediaRecorder.start(5000);// After 5 seconds create new Chunk
             
-            receiveStreamData()
-            streamVid.addEventListener("ended",receiveStreamData)
+
+            ms.addEventListener('sourceopen',receiveStreamData)
+            console.log(ms.readyState)
+            //receiveStreamData();
+
+            streamVid.src = URL.createObjectURL(ms);
+            //await receiveStreamData()
 
             //startAndStop()
         })
@@ -51,9 +60,14 @@
         }
 
         async function receiveStreamData(){
-            console.log("RECEIVE DATA")
+            console.log("RECEIVE")
+            console.log(ms.readyState)
+            //console.log("RECEIVE DATA")
             ////////////////////////////////////////////////////////////////
             //TOOO MUCH CODE!!!!!!!!!!!!
+            //let resp = await (await fetch('/livesupport/rec')).blob()
+            //let resp = await fetch('/livesupport/rec')
+            if(ms.readyState=="open"){
             let resp = await fetch('/livesupport/rec').then(response => {
                 console.log("HELLO READER")
                 const reader = response.body.getReader();
@@ -66,7 +80,6 @@
                                     controller.close();
                                     return;
                                 } else {
-                                    console.log("RECEIVE")
                                     controller.enqueue(value);
                                     return pump();
                                 }
@@ -77,21 +90,35 @@
             }).then(stream => {
                     return new Response(stream);
                 }).then(response => {
-                    return response.blob()
+                    return response.arrayBuffer()
                 }).then(data => {
-                    let bl = new Blob([data], { type: "video/webm" });
-                    return bl;
+                    //let bl = new Blob([data], { type: "video/webm" });
+                    return data;
                 }).catch(error => {
                     console.error(error);
                     USB.RIC.ERROR.DisplayCaughtError(error);
                     return "[]";
                 });
+
+
+            //console.log(resp)
+                    //lastBuffer = resp
+                    //console.log(srcbuff)
+                    srcbuff = ms.addSourceBuffer('video/webm;codecs="vorbis,vp8')
+                    srcbuff.appendBuffer(resp)
+
                 ////////////////////////////////////////////////////
-                let vidurl = URL.createObjectURL(resp);
-                streamVid.src = vidurl
+                //let vidurl = URL.createObjectURL(resp);
+
+                //nextBlobUrl = URL.createObjectURL(await resp.blob())
+                //let res = URL.createObjectURL(await resp.blob())
+                //streamVid.src = res
                 //showVid.controls = true
-            //setTimeout(receiveStreamData,100)
+            }
+
         }
+        let lastBuffer
+
 
 
 

@@ -14,6 +14,8 @@ var gameRouter = require('./routes/game');
 var editorRouter = require('./routes/editor');
 //var streamingRouter = require('./routes/streaming');
 var lsRouter = require('./routes/livesupport');
+var brainRouter = require('./routes/brain');
+let lssupRouter = require('./routes/ls-sup')
 
 var app = express();
 
@@ -40,6 +42,8 @@ app.use('/game', gameRouter)
 app.use('/editor', editorRouter)
 //app.use('/streaming', streamingRouter)
 app.use('/livesupport',lsRouter)
+app.use('/brain',brainRouter)
+app.use('/support',lssupRouter)
 
 
 // catch 404 and forward to error handler

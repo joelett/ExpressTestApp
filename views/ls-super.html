@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <title>Live Support</title>
+        <script src="../javascripts/peerjs.min.js"></script>
+        <script src="../javascripts/ls-sup.js"></script>
+        <script>supporter=true</script>
+    </head>
+    <body>
+        <div>
+        <!--    <h1>Live Support</h1>
+            <p id="req"></p>
+            <div id="ls.request-box">
+
+            </div>
+            <script>
+                document.getElementById("req").innerText="There are currently "+document.getElementById("ls.request-box").children.length+" requests right now."
+            </script>
+
+        </div>
+        <div id="ls.vid-grid" hidden>
+            <div id="ls.vid-me-grid">
+                <video id="ls.vid-me" width="200" height="200" autoplay></video>
+            </div>
+            <div id="ls.vid-sup-grid">
+                <video id="ls.vid-sup" width="800" height="600" autoplay></video>
+            </div>
+        </div>-->
+        <div>
+            <h1>Live Support</h1>
+            <p id="req"></p>
+            <ls-requests></ls-requests>
+
+            <script>
+                document.getElementById("req").innerText="There are currently "+document.getElementsByTagName("ls-requests")[0].children.length+" requests right now."
+            </script>
+        </div>
+        <ls-videos></ls-videos>
+    </body>
+</html>

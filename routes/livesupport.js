@@ -5,7 +5,7 @@ let fs = require("fs")
 let router = express.Router();
 
 let {PeerServer} = require("peer")
-let peerServer = PeerServer({port:9000,path:'/lsps'})
+let peerServer = PeerServer({port:9002,path:'/lsps'})
 
 
 const bodyParser = require('body-parser');
@@ -32,7 +32,7 @@ let upload = multer()//{dest:"uploads/"}
 let lastupload
 
 router.post("/send",upload.single('featuredVid'),(req,res)=>{
-    console.log(req.file)
+    //console.log(req.file)
     lastupload=req.file
     res.status(200).send("ok")
     
@@ -41,7 +41,7 @@ router.post("/send",upload.single('featuredVid'),(req,res)=>{
 
 router.get("/rec",(req,res)=>{
     console.log("REC")
-    
+
     res.write(lastupload.buffer,'binary');
     res.end(null, 'binary');
 })

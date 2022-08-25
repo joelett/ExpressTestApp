@@ -6,11 +6,13 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "brain.js": "^2.0.0-beta.15",
     "consolidate": "^0.16.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "ejs": "^3.1.8",
     "express": "^4.16.4",
+    "gpu.js": "^2.15.2",
     "html": "^1.0.0",
     "http-errors": "^1.6.3",
     "morgan": "~1.9.1",
