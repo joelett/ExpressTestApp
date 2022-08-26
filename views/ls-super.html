@@ -31,9 +31,14 @@
             <ls-requests></ls-requests>
 
             <script>
-                document.getElementById("req").innerText="There are currently "+document.getElementsByTagName("ls-requests")[0].children.length+" requests right now."
+                function reqChange(){
+                    document.getElementById("req").innerText="There are currently "+document.getElementsByTagName("ls-requests")[0].shadowRoot.children[0].children.length+" requests right now."
+                    setTimeout(reqChange,10000);
+                }
+                reqChange();
             </script>
         </div>
         <ls-videos></ls-videos>
+        <ls-hangupbtn></ls-hangup>
     </body>
 </html>

@@ -21,8 +21,8 @@ router.post("/addToWaitlist",(req,res)=>{
     if(!waitlist.includes(req.body.id)){
         console.log("ADD "+req.body.id)
         waitlist.push(req.body.id)
-        waiting.push(false);
         stayAlive.push(true)
+        waiting.push(false);
     }
     res.status(200).send("OK");
 })
@@ -31,6 +31,7 @@ router.post("/stillAlive",(req,res)=>{
     console.log("ALIVE")
     if(waitlist.includes(req.body.id)){
         let i = waitlist.indexOf(req.body.id)
+        console.log(waiting)
         stayAlive[i]=true;
         res.status(200).send(JSON.stringify({
             wait:waiting[i]
@@ -52,7 +53,7 @@ router.post("/waitForMe",(req,res)=>{
 })
 
 router.get("/getWaitlist",(req,res)=>{
-    res.status(200).send(JSON.stringify({waitlist:waitlist}));
+    res.status(200).send(JSON.stringify({waitlist:waitlist,wait:waiting}));
 })
 
 router.post("/remWaitlist",(req,res)=>{
@@ -80,7 +81,7 @@ async function removeDeadElements(){
             stayAlive[i]=false
         }
     }
-    setTimeout(removeDeadElements,10000)
+    setTimeout(removeDeadElements,5000)
 }
 removeDeadElements()
 
