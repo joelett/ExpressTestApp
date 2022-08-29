@@ -22,11 +22,22 @@ async function init() {
         console.log("id: " + id)
     })
 
+
+    //mediaStream.addTrack()
+    mediaStream = new MediaStream((await navigator.mediaDevices.getUserMedia({video:false,audio:true})).getTracks())
+    console.log((await navigator.mediaDevices.getUserMedia({video:false,audio:true})).getTracks())
+
+    let vs = document.getElementsByTagName("ls-videos")[0].emptyCanvas.captureStream(25)
+    console.log(vs.getVideoTracks()[0])
+    mediaStream.addTrack(vs.getVideoTracks()[0])
+
+
     //mediaStream = await navigator.mediaDevices.getDisplayMedia()
     document.getElementsByTagName("ls-videos")[0].vidme.srcObject = mediaStream
     heartbeat()
 
     document.getElementsByTagName("ls-hangupbtn")[0].style.display = "none"
+
 }
 
 async function heartbeat(){
@@ -272,6 +283,11 @@ class VideoGrid extends HTMLElement {
     constructor() {
         super();
         let shadow = this.attachShadow({ mode: 'open' })
+
+        this.emptyCanvas = document.createElement("canvas")
+        this.emptyCanvas.style.width=1;
+        this.emptyCanvas.style.height=1;
+
         let wrapper = document.createElement("span")
         wrapper.style.zIndex=1
         let vg1 = document.createElement("div");
@@ -297,9 +313,29 @@ class VideoGrid extends HTMLElement {
                 console.log(conn)
                 console.log(conn.peerConnection)
                 console.log(conn.peerConnection.getSenders())
-                conn.peerConnection.getSenders()[0].replaceTrack(mediaStream.getTracks()[0])
+
+
+
+                //console.log("TRACKS "+mediaStream.getTracks().length)
+                //console.log("TRACKS "+conn.peerConnection.getSenders().length)
+                //conn.peerConnection.addTrack(mediaStream.getVideoTracks()[0])
+                conn.peerConnection.getSenders()[1].replaceTrack(mediaStream.getVideoTracks()[0])
+                console.log(conn.peerConnection.getSenders().length)
+                console.log(conn.peerConnection.getSenders()[1].track)
+                console.log(conn.peerConnection.getSenders()[0].track.kind+" "+mediaStream.getTracks()[0].kind)
+
+
+                    /*if(i<conn.peerConnection.getSenders().length){
+                        console.log(conn.peerConnection.getSenders()[i].track.kind+" "+mediaStream.getTracks()[i].kind)
+                        console.log("i<s")
+                        conn.peerConnection.getSenders()[i].replaceTrack(mediaStream.getTracks()[i])
+                    }else{
+                        console.log("i>s")
+                        conn.peerConnection.addTrack(mediaStream.getTracks()[i])
+                    }*/
+
                 //conn.peerConnection.getSenders()[1].replaceTrack(mediaStream.getTracks()[1])
-            }
+            } 
         })
         vg1.appendChild(vidsrc)
         vg1.appendChild(this.vidme)
@@ -309,10 +345,13 @@ class VideoGrid extends HTMLElement {
         wrapper.appendChild(vg1)
         wrapper.appendChild(vg2)
         shadow.appendChild(wrapper)
+
+        shadow.appendChild(this.emptyCanvas)
     }
 
     vidme;
     vidsup
+    emptyCanvas;
 
     answerCall = function (stream) {
         console.log("ANSWER")
