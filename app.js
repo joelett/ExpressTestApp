@@ -16,6 +16,7 @@ var editorRouter = require('./routes/editor');
 var lsRouter = require('./routes/livesupport');
 var brainRouter = require('./routes/brain');
 let lssupRouter = require('./routes/ls-sup')
+let cryptoRouter = require('./routes/crypt')
 
 var app = express();
 
@@ -44,6 +45,7 @@ app.use('/editor', editorRouter)
 app.use('/livesupport',lsRouter)
 app.use('/brain',brainRouter)
 app.use('/support',lssupRouter)
+app.use('/crypto',cryptoRouter)
 
 
 // catch 404 and forward to error handler

@@ -24,8 +24,8 @@ async function init() {
 
 
     //mediaStream.addTrack()
-    mediaStream = new MediaStream((await navigator.mediaDevices.getUserMedia({video:false,audio:true})).getTracks())
-    console.log((await navigator.mediaDevices.getUserMedia({video:false,audio:true})).getTracks())
+    mediaStream = new MediaStream((await navigator.mediaDevices.getUserMedia({ video: false, audio: true })).getTracks())
+    console.log((await navigator.mediaDevices.getUserMedia({ video: false, audio: true })).getTracks())
 
     let vs = document.getElementsByTagName("ls-videos")[0].emptyCanvas.captureStream(25)
     console.log(vs.getVideoTracks()[0])
@@ -40,36 +40,36 @@ async function init() {
 
 }
 
-async function heartbeat(){
-    if(sendHeartbeat){
-        let resp = await fetch("/support/stillAlive",{
-            method:"POST",
-            headers:{"content-type":"application/json"},
-            body:await JSON.stringify({
-                id:pid
+async function heartbeat() {
+    if (sendHeartbeat) {
+        let resp = await fetch("/support/stillAlive", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: await JSON.stringify({
+                id: pid
             })
         })
-        if(resp.ok){
+        if (resp.ok) {
             let res = await resp.json()
             console.log(res)
             document.getElementsByTagName("ls-wait")[0].setActivation(res.wait)
         }
     }
-    setTimeout(heartbeat,1000)
+    setTimeout(heartbeat, 1000)
 }
 
-async function waitPlease(id){
-    fetch("/support/waitForMe",{
-        method:"POST",
-            headers:{"content-type":"application/json"},
-            body:await JSON.stringify({
-                id:id,
-                wait:true
-            })
+async function waitPlease(id) {
+    fetch("/support/waitForMe", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: await JSON.stringify({
+            id: id,
+            wait: true
+        })
     })
 }
 
-let sendHeartbeat=false
+let sendHeartbeat = false
 
 async function sendIdToServer() {
     await fetch("/support/addToWaitlist", {
@@ -79,7 +79,7 @@ async function sendIdToServer() {
             id: pid
         })
     })
-    sendHeartbeat=true;
+    sendHeartbeat = true;
 }
 
 async function hangup() {
@@ -90,15 +90,15 @@ async function hangup() {
             id: pid
         })
     })
-    if(conn){
+    if (conn) {
         conn.close()
         document.getElementsByTagName("ls-videos")[0].endCall()
-        if(document.getElementsByTagName("ls-hangupbtn").length!=0){
+        if (document.getElementsByTagName("ls-hangupbtn").length != 0) {
             document.getElementsByTagName("ls-hangupbtn")[0].style.display = "none"
         }
     }
 
-    sendHeartbeat=false
+    sendHeartbeat = false
     document.getElementsByTagName("ls-wait")[0].setActivation(false)
 }
 
@@ -118,13 +118,13 @@ async function calling(id) {
     conn = peer.call(id, mediaStream)
     conn.on('stream', function (stream) {
         document.getElementsByTagName("ls-videos")[0].answerCall(stream)
-        if(document.getElementsByTagName("ls-hangupbtn").length!=0){
+        if (document.getElementsByTagName("ls-hangupbtn").length != 0) {
             document.getElementsByTagName("ls-hangupbtn")[0].style.display = "block"
         }
     })
-    conn.on('close',function(){
+    conn.on('close', function () {
         document.getElementsByTagName("ls-videos")[0].endCall()
-        if(document.getElementsByTagName("ls-hangupbtn").length!=0){
+        if (document.getElementsByTagName("ls-hangupbtn").length != 0) {
             document.getElementsByTagName("ls-hangupbtn")[0].style.display = "none"
         }
     })
@@ -139,8 +139,8 @@ peer.on("call", function (call) {
         document.getElementsByTagName("ls-videos")[0].answerCall(stream)
     })
     document.getElementsByTagName("ls-wait")[0].setActivation(false)
-    sendHeartbeat=false;
-    call.on('close',function(){
+    sendHeartbeat = false;
+    call.on('close', function () {
         document.getElementsByTagName("ls-videos")[0].endCall()
     })
 })
@@ -195,7 +195,7 @@ class Request extends HTMLElement {
         this.waiting = document.createElement("p");
         this.waiting.style.color = "#FF0055"
         this.waiting.style.fontWeight = "bold"
-        
+
         requestFrame.appendChild(this.wait)
         requestFrame.appendChild(this.waiting)
 
@@ -222,7 +222,7 @@ class Request extends HTMLElement {
 
         //this.accept.addEventListener("click",()=>{document.getElementsByTagName("ls-videos")[0].call(this.id)})
         this.accept.addEventListener("click", () => { calling(this.id) })
-        this.wait.addEventListener("click",()=>{ waitPlease(this.id) })
+        this.wait.addEventListener("click", () => { waitPlease(this.id) })
     }
     getId = function () {
         return this.id;
@@ -230,11 +230,11 @@ class Request extends HTMLElement {
     getName = function () {
         return this.name;
     }
-    setWaiting = function(w){
-        if(w){
-            this.waiting.innerText="Wartet";
-        }else{
-            this.waiting.innerText="";
+    setWaiting = function (w) {
+        if (w) {
+            this.waiting.innerText = "Wartet";
+        } else {
+            this.waiting.innerText = "";
         }
     }
 }
@@ -268,10 +268,10 @@ class RequestBox extends HTMLElement {
         let sc = shadow.children.length
         while (wl.waitlist.length > shadow.children.length) {
             let req = document.createElement("ls-request")
-            req.setData(wl.waitlist[sc+i++])
+            req.setData(wl.waitlist[sc + i++])
             shadow.appendChild(req)
         }
-        for(let i=0;i<shadow.children.length;i++){
+        for (let i = 0; i < shadow.children.length; i++) {
             shadow.children[i].setWaiting(wl.wait[i])
         }
 
@@ -285,11 +285,11 @@ class VideoGrid extends HTMLElement {
         let shadow = this.attachShadow({ mode: 'open' })
 
         this.emptyCanvas = document.createElement("canvas")
-        this.emptyCanvas.style.width=1;
-        this.emptyCanvas.style.height=1;
+        this.emptyCanvas.style.width = 1;
+        this.emptyCanvas.style.height = 1;
 
         let wrapper = document.createElement("span")
-        wrapper.style.zIndex=1
+        wrapper.style.zIndex = 1
         let vg1 = document.createElement("div");
         vg1.style.display = "inline-block"
         let vg2 = document.createElement("div");
@@ -298,18 +298,18 @@ class VideoGrid extends HTMLElement {
         this.vidme.autoplay = true;
         this.vidme.width = 200;
         this.vidme.height = 200;
-        vg1.style.width=200;
-        vg1.style.verticalAlign="top"
+        vg1.style.width = 200;
+        vg1.style.verticalAlign = "top"
         this.vidsup = document.createElement("video")
         this.vidsup.autoplay = true;
         this.vidsup.width = 1600;
         this.vidsup.height = 800;
         let vidsrc = document.createElement("button")
-        vidsrc.innerText="Streame Bildschirm"
-        vidsrc.addEventListener("click",async ()=>{
-            mediaStream = await navigator.mediaDevices.getDisplayMedia({video:true,audio:true});
-            this.vidme.srcObject=mediaStream;
-            if(conn){
+        vidsrc.innerText = "Streame Bildschirm"
+        vidsrc.addEventListener("click", async () => {
+            mediaStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+            this.vidme.srcObject = mediaStream;
+            if (conn) {
                 console.log(conn)
                 console.log(conn.peerConnection)
                 console.log(conn.peerConnection.getSenders())
@@ -322,20 +322,20 @@ class VideoGrid extends HTMLElement {
                 conn.peerConnection.getSenders()[1].replaceTrack(mediaStream.getVideoTracks()[0])
                 console.log(conn.peerConnection.getSenders().length)
                 console.log(conn.peerConnection.getSenders()[1].track)
-                console.log(conn.peerConnection.getSenders()[0].track.kind+" "+mediaStream.getTracks()[0].kind)
+                console.log(conn.peerConnection.getSenders()[0].track.kind + " " + mediaStream.getTracks()[0].kind)
 
 
-                    /*if(i<conn.peerConnection.getSenders().length){
-                        console.log(conn.peerConnection.getSenders()[i].track.kind+" "+mediaStream.getTracks()[i].kind)
-                        console.log("i<s")
-                        conn.peerConnection.getSenders()[i].replaceTrack(mediaStream.getTracks()[i])
-                    }else{
-                        console.log("i>s")
-                        conn.peerConnection.addTrack(mediaStream.getTracks()[i])
-                    }*/
+                /*if(i<conn.peerConnection.getSenders().length){
+                    console.log(conn.peerConnection.getSenders()[i].track.kind+" "+mediaStream.getTracks()[i].kind)
+                    console.log("i<s")
+                    conn.peerConnection.getSenders()[i].replaceTrack(mediaStream.getTracks()[i])
+                }else{
+                    console.log("i>s")
+                    conn.peerConnection.addTrack(mediaStream.getTracks()[i])
+                }*/
 
                 //conn.peerConnection.getSenders()[1].replaceTrack(mediaStream.getTracks()[1])
-            } 
+            }
         })
         vg1.appendChild(vidsrc)
         vg1.appendChild(this.vidme)
@@ -357,7 +357,7 @@ class VideoGrid extends HTMLElement {
         console.log("ANSWER")
         this.vidsup.srcObject = stream;
     }
-    endCall = function (){
+    endCall = function () {
         console.log("END CALL")
         this.vidsup.srcObject = new MediaStream();
     }
@@ -368,19 +368,78 @@ class HelpButton extends HTMLElement {
         super();
         let shadow = this.attachShadow({ mode: 'open' })
         let wrapper = document.createElement("div");
-        wrapper.style.zIndex=1
-        let btn = document.createElement("button")
-        btn.innerText = "Help"
-        btn.addEventListener("click", () => {
+        wrapper.style.zIndex = 1
+        let helpbtn = document.createElement("button")
+        let screenbtn = document.createElement("button")
+        helpbtn.innerText = "Help"
+        screenbtn.innerText = "Screenshot"
+        helpbtn.addEventListener("click", () => {
             if (btn.innerText == "Help") {
                 sendIdToServer()
-                btn.innerText = "Hang up"
+                helpbtn.innerText = "Hang up"
             } else {
                 hangup()
-                btn.innerText = "Help"
+                helpbtn.innerText = "Help"
             }
         })
-        wrapper.appendChild(btn)
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        screenbtn.addEventListener("click", async () => {////////////////////////////////////SCREENSHOT/////////////////////////////////////////////////////////////////////
+
+            const canvas = document.createElement("canvas");
+            const context = canvas.getContext("2d");
+            const video = document.createElement("video");
+            video.autoplay = true;
+
+            document.body.appendChild(video)
+            document.body.appendChild(canvas)
+
+            try {
+                const captureStream = await navigator.mediaDevices.getDisplayMedia();
+                video.style.width = captureStream.getVideoTracks()[0].getSettings().width;
+                video.style.height = captureStream.getVideoTracks()[0].getSettings().height;
+                canvas.width = captureStream.getVideoTracks()[0].getSettings().width;
+                canvas.height = captureStream.getVideoTracks()[0].getSettings().height;
+
+                video.srcObject = captureStream;
+
+                //async function draw() {
+                video.addEventListener('canplaythrough', function () {
+
+                    setTimeout(() => {
+
+
+                        context.drawImage(video, 0, 0);
+                        context.fillStyle = "rgb(0,100,50)"
+                        context.fillRect(0, 0, 10, 10);
+
+                        let frame;
+                        canvas.toBlob(async (blob) => {
+                            frame = URL.createObjectURL(blob);
+                            console.log(frame)
+                            /*await navigator.clipboard.write([
+                                new ClipboardItem({
+                                    [blob.type]: blob
+                                })
+                            ]);*/
+
+                            //window.location.href='mailto:joel.etterichretz@usb-bochum.de?subject="TEST"&body="TEST 2%20Und Test 3%20<html><head></head><body>test</body></html>"&attach="C:\\Users\\usb6368\\Desktop\\Testproject\\image.jpg"';
+                            //window.location.href=frame;
+                            captureStream.getTracks().forEach(track => track.stop());
+                        })
+                    }, 100)
+
+                    //const frame = canvas.toDataURL("image/png");
+                });
+                //}
+                //setTimeout(draw,10)
+
+            } catch (err) {
+                console.error("Error: " + err);
+            }
+        })
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        wrapper.appendChild(helpbtn)
+        wrapper.appendChild(screenbtn)
         shadow.appendChild(wrapper)
         //appendChild(document.createElement("button"))
     }
@@ -394,15 +453,15 @@ class Wait extends HTMLElement {
         wrap.style.zIndex = 10
         this.waitingLbl = document.createElement("p")
         this.waitingLbl.style.fontWeight = "bold"
-        this.waitingLbl.style.color="#FF0055"
-        this.waitingLbl.style.fontSize="48px"
-        this.waitingLbl.style.position="relative"
-        this.waitingLbl.style.transform="translate(-50%, -50%)"
-        this.waitingLbl.style.textAlign="center"
+        this.waitingLbl.style.color = "#FF0055"
+        this.waitingLbl.style.fontSize = "48px"
+        this.waitingLbl.style.position = "relative"
+        this.waitingLbl.style.transform = "translate(-50%, -50%)"
+        this.waitingLbl.style.textAlign = "center"
         wrap.style.display = "inline-block"
-        wrap.style.position="absolute"
-        wrap.style.top="50%"
-        wrap.style.left="50%"
+        wrap.style.position = "absolute"
+        wrap.style.top = "50%"
+        wrap.style.left = "50%"
         //wrap.style.transform="translate(-100%, -100%)"
         wrap.appendChild(this.waitingLbl)
         shadow.appendChild(wrap);
@@ -413,7 +472,7 @@ class Wait extends HTMLElement {
     active = false
 
     setActivation = function (active) {
-        console.log("SET ACTIVATION "+active)
+        console.log("SET ACTIVATION " + active)
         this.active = active
         this.updateLabel();
     }
@@ -431,19 +490,19 @@ class Wait extends HTMLElement {
                 this.waitingLbl.innerText += "."
             }
             this.dotind++;
-            if(this.dotind>3){
-                this.dotind=0;
+            if (this.dotind > 3) {
+                this.dotind = 0;
             }
         }
     }
 }
 
-class Hangup extends HTMLElement{
+class Hangup extends HTMLElement {
     constructor() {
         super();
         let shadow = this.attachShadow({ mode: 'open' })
         let wrapper = document.createElement("div");
-        wrapper.style.zIndex=1
+        wrapper.style.zIndex = 1
         let btn = document.createElement("button")
         btn.innerText = "Auflegen"
         btn.addEventListener("click", () => {
@@ -460,4 +519,4 @@ customElements.define('ls-requests', RequestBox);
 customElements.define('ls-videos', VideoGrid);
 customElements.define('ls-help', HelpButton);
 customElements.define('ls-wait', Wait)
-customElements.define('ls-hangupbtn',Hangup)
+customElements.define('ls-hangupbtn', Hangup)
